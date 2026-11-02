@@ -25,7 +25,7 @@ jobs:
 
       - name: Build APK
         run: |
-          PROJECT_DIR=$(dirname "$(find project -name settings.gradle | head -1)")
+PROJECT_DIR=$(dirname "$(find project -name settings.gradle | head -1)")
 wget -q https://services.gradle.org/distributions/gradle-8.9-bin.zip
 unzip -q gradle-8.9-bin.zip
 ./gradle-8.9/bin/gradle -p "$PROJECT_DIR" assembleDebug
