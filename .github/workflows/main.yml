@@ -25,9 +25,10 @@ jobs:
 
       - name: Build APK
         run: |
-          chmod +x $(find project -name gradlew | head -1)
-          cd $(dirname $(find project -name gradlew | head -1))
-          ./gradlew assembleDebug
+          PROJECT_DIR=$(dirname "$(find project -name settings.gradle | head -1)")
+wget -q https://services.gradle.org/distributions/gradle-8.9-bin.zip
+unzip -q gradle-8.9-bin.zip
+./gradle-8.9/bin/gradle -p "$PROJECT_DIR" assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
