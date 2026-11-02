@@ -21,14 +21,22 @@ jobs:
 
       - name: Extract project
         run: |
-          python3 -c "import zipfile,glob; zipfile.ZipFile(glob.glob('*.zip')[0]).extractall('project')"
+          python3 -c "import zipfile,glob; z=glob.glob('*.zip'); assert z, 'ZIP not found'; zipfile.ZipFile(z[0]).extractall('project')"
 
       - name: Build APK
         run: |
-          PROJECT_DIR=$(dirname "$(find project -name settings.gradle | head -1)")
+          PROJECT_DIR=$(dirname "$(find project -type f \( -name settings.gradle -o -name settings.gradle.kts \) | head -1)")
+          cat > /tmp/java17.gradle <<'EOF'
+          allprojects {
+            tasks.withType(org.gradle.api.tasks.compile.JavaCompile).configureEach {
+              sourceCompatibility = '17'
+              targetCompatibility = '17'
+            }
+          }
+          EOF
           wget -q https://services.gradle.org/distributions/gradle-8.9-bin.zip
           unzip -q gradle-8.9-bin.zip
-          ./gradle-8.9/bin/gradle -p "$PROJECT_DIR" assembleDebug
+          ./gradle-8.9/bin/gradle -I /tmp/java17.gradle -p "$PROJECT_DIR" assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
